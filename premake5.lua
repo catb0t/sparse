@@ -6,6 +6,23 @@ workspace "rle_array"
 
   targetdir "bin/%{cfg.buildcfg}/"
 
+  filter { "action:gmake*", "toolset:gcc" }
+    buildoptions {
+      "-Wall", "-Wextra", "-Wfloat-equal", "-Winline", "-Wundef", "-Werror",
+      "-fverbose-asm", "-Wint-to-pointer-cast", "-Wshadow", "-Wpointer-arith",
+      "-Wcast-align", "-Wcast-qual", "-Wunreachable-code", "-Wstrict-overflow=5",
+      "-Wwrite-strings", "-Wconversion", "--pedantic-errors",
+      "-Wredundant-decls", "-Werror=maybe-uninitialized",
+      "-Wmissing-declarations", "-Wmissing-parameter-type",
+      "-Wmissing-prototypes", "-Wnested-externs", "-Wold-style-declaration",
+      "-Wold-style-definition", "-Wstrict-prototypes", "-Wpointer-sign"
+    }
+
+  filter "configurations:dbg"
+    buildoptions { "-ggdb3" }
+    symbols "on"
+    optimize "off"
+
   project "interact"
     kind "consoleapp"
 

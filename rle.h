@@ -41,21 +41,31 @@
 #ifndef RLE_ARRAY_H
 #define RLE_ARRAY_H
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 
+#define alloc(type, size) malloc((sizeof (type)) * size)
+
 typedef uint64_t rlep_t;
 
-rlep_t*  rlep_new (const rlep_t* const non_sparse, const size_t len);
-rlep_t   rlep_get (const rlep_t* const sps, const size_t index);
-size_t   rlep_len (const rlep_t* const sps);
-size_t  rlep_lenr (const rlep_t* const sps);
+rlep_t*        rlep_new (const rlep_t* const non_sparse, const size_t len);
+rlep_t         rlep_get (const rlep_t* const sps, const size_t index);
+size_t         rlep_len (const rlep_t* const sps);
+size_t        rlep_lenr (const rlep_t* const sps);
+size_t rlep_len_virtual (const rlep_t* const sps);
 
-rlep_t rlep_search_linear (const rlep_t* const sps, const size_t index);
-rlep_t rlep_search_binary (const rlep_t* const sps, const size_t index);
+rlep_t rlep_search_idx_linear (const rlep_t* const sps, const size_t index, bool* const ok);
+rlep_t rlep_search_idx_binary (const rlep_t* const sps, const size_t index, bool* const ok);
 
+size_t* rlep_decode_zero_ranges (const rlep_t* const sps);
+size_t* rlep_encode_zero_ranges (const uint64_t* const sps);
+
+size_t*    _elements_addr (const rlep_t* const sps);
+size_t*    _elements_data (const rlep_t* const sps);
 size_t  count_next_zeroes (const uint64_t* const array, const size_t len, const size_t idx);
 size_t count_nonzero_elts (const uint64_t* const array, const size_t len);
-size_t           real_len (const size_t len);
+size_t          _real_len (const size_t len);
 
+bool is_in_range (const size_t n, const size_t low, const size_t high);
 #endif
