@@ -19,26 +19,31 @@ workspace "rle_array"
     }
 
   filter "configurations:dbg"
-    buildoptions { "-ggdb3" }
+    buildoptions { "-ggdb3", "-O0" }
     symbols "on"
     optimize "off"
+
+  filter "configurations:dist"
+    buildoptions { "-fomit-frame-pointer", "-O3" }
+    symbols "off"
+    optimize "full"
 
   project "interact"
     kind "consoleapp"
 
     files { "interact.c" }
-    links { "rlearray" }
+    links { "sparse" }
 
-  project "rlearray"
+  project "sparse"
     kind "staticlib"
 
-    files { "rlep.c" }
+    files { "rlep.c", "nonsparse.c" }
 
   project "test"
     kind "consoleapp"
 
     files { "test.c" }
-    links { "criterion", "rlearray" }
+    links { "criterion", "sparse" }
 
     targetname "test_rle"
 

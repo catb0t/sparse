@@ -10,18 +10,18 @@ Test(prim, len) {
   cr_assert_eq(4 + 1020, rlep_len_virtual(a));
 }
 
-Test(prim, count) {
+Test(prim, ns_count) {
 
   uint64_t b[34] = {1, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 34};
 
-  cr_assert_eq(2, count_nonzero_elts(b, 34));
+  cr_assert_eq(2, ns_count_nonzero_elts(b, 34));
 
   uint64_t c[34] = {1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 34};
 
-  cr_assert_eq(34, count_nonzero_elts(c, 34));
+  cr_assert_eq(34, ns_count_nonzero_elts(c, 34));
 
-  cr_assert_eq(32, count_next_zeroes(b, 34, 1));
-  cr_assert_eq(0, count_next_zeroes(c, 34, 1));
+  cr_assert_eq(32, ns_count_next_zeroes(b, 34, 1));
+  cr_assert_eq(0, ns_count_next_zeroes(c, 34, 1));
 }
 
 Test(prim, lsch) {
@@ -33,6 +33,17 @@ Test(prim, lsch) {
   cr_assert_eq(0, rlep_search_idx_linear(a, 1, NULL));
   cr_assert_eq(45, rlep_search_idx_linear(a, 2, NULL));
   cr_assert_eq(0, rlep_search_idx_linear(a, 3, NULL));
+
+  #define BIG 10000000
+  rlep_t* const b = alloc(rlep_t, BIG + 1);
+  b[0] = BIG / 2;
+  for (size_t i = 1; i < BIG + 1; i++) {
+    b[i] = BIG;
+  }
+
+  cr_assert_eq(BIG, rlep_search_idx_linear(b, BIG, NULL));
+
+  free(b);
 }
 
 Test(prim, elts) {
@@ -77,4 +88,22 @@ Test(prim, dcz) {
 Test(prim, in_range) {
   cr_assert(! is_in_range(0, 0, 0));
   cr_assert(  is_in_range(1, 1, 2));
+}
+
+Test(prim, ns_range) {
+  uint64_t a[28] = {0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,1};
+  uint64_t b[6] = {0, 7, 9, 15, 21, 26};
+
+  uint64_t* res = ns_zero_ranges(a, 28);
+
+  cr_assert_arr_eq(b, res, 6);
+
+  free(res);
+  uint64_t c[] = {1,1,1,1,1,1,1,1,1};
+
+  res = ns_nonzero_elts(a, 28);
+
+  cr_assert_arr_eq(c, res, 9);
+
+  free(res);
 }

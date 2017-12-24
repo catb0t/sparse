@@ -4,7 +4,9 @@
 
 sparse number arrays (bignum will be supported later) implemented by run-length-encoding
 
-designed to trade speed of random access for memory consumption of huge arrays which contain mostly zeroes
+designed to trade speed of random access for reduced memory consumption for huge arrays which contain mostly zeroes
+
+for the implementation of hashtables
 
 on linux, use `util/premake5 gmake`to build for GNU make
 

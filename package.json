@@ -1,0 +1,19 @@
+{
+  "name": "sparse",
+  "version": "0.0.1",
+  "repo": "catb0t/sparse",
+  "description": "Sparse arrays implemented by run-length-encoding",
+  "keywords": [
+    "math",
+    "arrays",
+    "bignum"
+  ],
+  "license": "GPL v3",
+  "src": [
+    "premake5.lua",
+    "rle.h",
+    "rlep.c",
+    "README.md",
+    "LICENSE"
+  ]
+}

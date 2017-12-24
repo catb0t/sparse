@@ -5,7 +5,7 @@
 #include "rle.h"
 
 rlep_t* rlep_new (const uint64_t* const non_sparse, const uint64_t len) {
-  rlep_t* out = malloc( _real_len( count_nonzero_elts(non_sparse, len) ) );
+  rlep_t* out = malloc( _real_len( ns_count_nonzero_elts(non_sparse, len) ) );
 
   return out;
 }
@@ -22,19 +22,10 @@ rlep_t* rlep_new (const uint64_t* const non_sparse, const uint64_t len) {
     is no longer O(1), but instead necessitates a search of some sort.
 
 */
-rlep_t   rlep_get (const rlep_t* const sps, const size_t index) {
-  const rlep_t
-    elems = sps[0],
-    len   = rlep_len(sps);
-  (void) elems;
-  (void) len;
-  (void) index;
-  // binary search here
+rlep_t   rlep_get (const rlep_t* const sps, const size_t index, bool* const ok) {
 
-  /* final */
-  const size_t idx = 3;
-  assert( ! (2 % idx) );
-  return sps[idx];
+  return rlep_search_idx_linear(sps, index, ok);
+
 }
 
 /*
@@ -250,28 +241,6 @@ size_t  rlep_lenr (const rlep_t* const sps) {
 /* algorithm for determining real number of elements */
 size_t _real_len (const size_t len) {
   return 1 + (2 * len);
-}
-
-size_t count_next_zeroes (const uint64_t* const array, const size_t len, const size_t idx) {
-  if (idx + 1 > len || 0 == len) { return 0; }
-
-  size_t zs = 0;
-  for (size_t i = idx; i < len; i++) {
-    if ( 0 != array[i] ) { break; }
-    zs++;
-  }
-
-  return zs;
-}
-
-size_t count_nonzero_elts (const uint64_t* const array, const size_t len) {
-  size_t ct = 0;
-
-  for (size_t i = 0; i < len; i++) {
-    ct += !! array[i];
-  }
-
-  return ct;
 }
 
 /*
