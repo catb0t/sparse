@@ -8,11 +8,16 @@
     "arrays",
     "bignum"
   ],
+  "dependencies": {
+    "catb0t/yacbnl": "*"
+  },
   "license": "GPL v3",
   "src": [
     "premake5.lua",
     "rle.h",
+    "nonsparse.c",
     "rlep.c",
+    "rley.c",
     "README.md",
     "LICENSE"
   ]
