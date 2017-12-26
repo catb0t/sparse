@@ -1,8 +1,8 @@
 {
   "name": "sparse",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repo": "catb0t/sparse",
-  "description": "Sparse arrays implemented by run-length-encoding",
+  "description": "Sparse arrays implemented by run-length-encoding regions of zeroes",
   "keywords": [
     "math",
     "arrays",
@@ -13,11 +13,12 @@
   },
   "license": "GPL v3",
   "src": [
-    "premake5.lua",
-    "rle.h",
-    "nonsparse.c",
-    "rlep.c",
-    "rley.c",
+    "src/rle.h",
+    "src/primitive/nonsparse.c",
+    "src/primitive/rlep.c",
+    "src/yacbnl/nonsparse.c",
+    "src/yacbnl/rley.c",
+    "src/rle.c",
     "README.md",
     "LICENSE"
   ]
