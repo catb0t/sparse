@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include "rle.h"
+#include "sparse.h"
 
 int main(void) {
 

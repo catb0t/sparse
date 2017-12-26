@@ -38,8 +38,8 @@
     to find anything but we'll figure that out when it's implemented.
 */
 
-#ifndef RLE_ARRAY_H
-#define RLE_ARRAY_H
+#ifndef SPARSE_H
+#define SPARSE_H
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -54,36 +54,36 @@
   #define set_out_param(name, value) if(NULL!=(name)){*name=value;}
 #endif
 
-typedef uint64_t rlep_t;
-typedef bignum_t rley_t;
+typedef uint64_t sparse64_t;
+typedef bignum_t sparsebn_t;
 
-rlep_t*        rlep_new (const uint64_t* const non_sparse, const size_t len);
-rlep_t         rlep_get (const rlep_t* const sps, const size_t index, bool* const ok);
-rlep_t*     rlep_insert (const rlep_t* const sps, const size_t index, const rlep_t value, bool* const ok);
-rlep_t*     rlep_delete (const rlep_t* const sps, const size_t index, bool* const ok);
+sparse64_t*        sparse64_new (const uint64_t* const non_sparse, const size_t len);
+sparse64_t         sparse64_get (const sparse64_t* const sps, const size_t index, bool* const ok);
+sparse64_t*     sparse64_insert (const sparse64_t* const sps, const size_t index, const sparse64_t value, bool* const ok);
+sparse64_t*     sparse64_delete (const sparse64_t* const sps, const size_t index, bool* const ok);
 
-size_t         rlep_len (const rlep_t* const sps);
-size_t        rlep_lenr (const rlep_t* const sps);
-size_t rlep_len_virtual (const rlep_t* const sps);
+size_t         sparse64_len (const sparse64_t* const sps);
+size_t        sparse64_lenr (const sparse64_t* const sps);
+size_t sparse64_len_virtual (const sparse64_t* const sps);
 
-rlep_t rlep_search_idx_linear (const rlep_t* const sps, const size_t index, bool* const ok);
-rlep_t rlep_search_idx_binary (const rlep_t* const sps, const size_t index, bool* const ok);
+sparse64_t sparse64_search_idx_linear (const sparse64_t* const sps, const size_t index, bool* const ok);
+sparse64_t sparse64_search_idx_binary (const sparse64_t* const sps, const size_t index, bool* const ok);
 
-rlep_t*        rlep_ranges_to_addrs (const size_t* const ranges, const size_t len);
-rlep_t* rlep_uncompress_zero_ranges (const rlep_t* const sps);
-size_t*   rlep_compress_zero_ranges (const uint64_t* const nonsparse, const size_t len, size_t* const out_len);
+sparse64_t*        sparse64_ranges_to_addrs (const size_t* const ranges, const size_t len);
+sparse64_t* sparse64_uncompress_zero_ranges (const sparse64_t* const sps);
+size_t*   sparse64_compress_zero_ranges (const uint64_t* const nonsparse, const size_t len, size_t* const out_len);
 
-rlep_t*    _pelements_addr (const rlep_t* const sps);
-rlep_t*    _pelements_data (const rlep_t* const sps);
+sparse64_t*    _pelements_addr (const sparse64_t* const sps);
+sparse64_t*    _pelements_data (const sparse64_t* const sps);
 size_t          _real_len (const size_t len);
 bool is_in_range (const size_t n, const size_t low, const size_t high);
 
-rley_t*        rley_new (const uint64_t* const non_sparse, const size_t len);
-rley_t         rley_get (const rley_t* const sps, const size_t index, bool* const ok);
-rley_t*     rley_insert (const rley_t* const sps, const size_t index, const rley_t value, bool* const ok);
-rley_t*     rley_delete (const rley_t* const sps, const size_t index, bool* const ok);
+sparsebn_t*        sparsebn_new (const uint64_t* const non_sparse, const size_t len);
+sparsebn_t         sparsebn_get (const sparsebn_t* const sps, const size_t index, bool* const ok);
+sparsebn_t*     sparsebn_insert (const sparsebn_t* const sps, const size_t index, const sparsebn_t value, bool* const ok);
+sparsebn_t*     sparsebn_delete (const sparsebn_t* const sps, const size_t index, bool* const ok);
 
-rley_t*    _yelements_addr (const rley_t* const sps);
+sparsebn_t*    _yelements_addr (const sparsebn_t* const sps);
 
 /* non-sparse utilities */
 

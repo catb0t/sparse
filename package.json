@@ -13,12 +13,12 @@
   },
   "license": "GPL v3",
   "src": [
-    "src/rle.h",
+    "src/sparse.h",
     "src/primitive/nonsparse.c",
-    "src/primitive/rlep.c",
+    "src/primitive/sparse.c",
     "src/yacbnl/nonsparse.c",
-    "src/yacbnl/rley.c",
-    "src/rle.c",
+    "src/yacbnl/sparse.c",
+    "src/sparse.c",
     "README.md",
     "LICENSE"
   ]

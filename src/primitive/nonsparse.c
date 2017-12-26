@@ -1,4 +1,4 @@
-#include "../rle.h"
+#include "../sparse.h"
 
 size_t ns_count_next_zeroes (const uint64_t* const array, const size_t len, const size_t idx) {
   if (idx + 1 > len || 0 == len) { return 0; }

@@ -1,4 +1,4 @@
-workspace "rle_array"
+workspace "sparse_array"
 
   configurations { "dbg", "dist" }
 
@@ -37,7 +37,7 @@ workspace "rle_array"
   project "sparse"
     kind "staticlib"
 
-    files { path.join("src", "primitive", "*.c"), path.join("src", "yacbnl", "*c") }
+    files { path.join("src", "unify_sparse.c") }
     links { "yacbnl" }
 
   project "test"
@@ -46,7 +46,7 @@ workspace "rle_array"
     files { path.join("src", "test", "*.c") }
     links { "criterion", "sparse" }
 
-    targetname "test_rle"
+    targetname "test_sparse"
 
   project "yacbnl"
     kind "staticlib"

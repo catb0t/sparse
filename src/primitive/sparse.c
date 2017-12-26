@@ -2,16 +2,16 @@
 #include <errno.h>
 #include <stdio.h>
 #include <inttypes.h>
-#include "../rle.h"
+#include "../sparse.h"
 
-rlep_t* rlep_new (const uint64_t* const non_sparse, const uint64_t len) {
-  rlep_t* const out = malloc( _real_len( ns_count_nonzero_elts(non_sparse, len) ) );
+sparse64_t* sparse64_new (const uint64_t* const non_sparse, const uint64_t len) {
+  sparse64_t* const out = malloc( _real_len( ns_count_nonzero_elts(non_sparse, len) ) );
 
   return out;
 }
 
 /*
-  rlep_t*, size_t -> rlep_t
+  sparse64_t*, size_t -> sparse64_t
 
   get a value from a primitive rle array by its index.
 
@@ -22,33 +22,33 @@ rlep_t* rlep_new (const uint64_t* const non_sparse, const uint64_t len) {
     is no longer O(1), but instead necessitates a search of some sort.
 
 */
-rlep_t   rlep_get (const rlep_t* const sps, const size_t index, bool* const ok) {
+sparse64_t   sparse64_get (const sparse64_t* const sps, const size_t index, bool* const ok) {
 
 //#ifdef LINEAR_SEARCH_GET
-  return rlep_search_idx_linear(sps, index, ok);
+  return sparse64_search_idx_linear(sps, index, ok);
 //#else
-//  return rlep_search_idx_binary(sps, index, ok);
+//  return sparse64_search_idx_binary(sps, index, ok);
 //#endif
 }
 
 /*
-  it is important to note that the rlep_search_idx_* functions search for an *index*!
+  it is important to note that the sparse64_search_idx_* functions search for an *index*!
   not for a value.
 */
 
 /*
-  rlep_t*, size_t, bool* -> rlep_t
+  sparse64_t*, size_t, bool* -> sparse64_t
 
   given an index, find the value at that index in sps through searching linearly
     from left to right
 
   looking up zeroes is faster than looking up non-zeroes
 */
-rlep_t rlep_search_idx_linear (const rlep_t* const sps, const size_t get_index, bool* const ok) {
+sparse64_t sparse64_search_idx_linear (const sparse64_t* const sps, const size_t get_index, bool* const ok) {
 
   set_out_param(ok, true);
 
-  const size_t vlen = rlep_len_virtual(sps);
+  const size_t vlen = sparse64_len_virtual(sps);
 
   if (get_index > vlen) {
     errno = EINVAL;
@@ -56,9 +56,9 @@ rlep_t rlep_search_idx_linear (const rlep_t* const sps, const size_t get_index, 
     return 0;
   }
 
-  const size_t len = rlep_len(sps), rlen = 2 * len;
+  const size_t len = sparse64_len(sps), rlen = 2 * len;
 
-  size_t* const zero_ranges = rlep_uncompress_zero_ranges(sps);
+  size_t* const zero_ranges = sparse64_uncompress_zero_ranges(sps);
 
   // if the index is within a zero range the value is zero
   for (size_t i = 0; i < rlen; i += 2) {
@@ -89,7 +89,7 @@ rlep_t rlep_search_idx_linear (const rlep_t* const sps, const size_t get_index, 
   return 0;
 }
 
-rlep_t rlep_search_idx_binary (const rlep_t* const sps, const size_t index, bool* const ok) {
+sparse64_t sparse64_search_idx_binary (const sparse64_t* const sps, const size_t index, bool* const ok) {
   (void) sps;
   (void) index;
   (void) *ok;
@@ -105,21 +105,21 @@ rlep_t rlep_search_idx_binary (const rlep_t* const sps, const size_t index, bool
 
   non-null out_len is modified and set to ns_count_zero_ranges()
 */
-size_t* rlep_compress_zero_ranges (const uint64_t* const nonsparse, const size_t len, size_t* const out_len) {
+size_t* sparse64_compress_zero_ranges (const uint64_t* const nonsparse, const size_t len, size_t* const out_len) {
   return ns_zero_ranges(nonsparse, len, out_len);
 }
 
 
 /*
-  size_t*, size_t -> rlep_t*
+  size_t*, size_t -> sparse64_t*
 
   ranges (from a non-sparse array) to address offset elements
 
   the length of the result is exactly half the length of the input
 */
-rlep_t* rlep_ranges_to_addrs (const size_t* const ranges, const size_t len) {
+sparse64_t* sparse64_ranges_to_addrs (const size_t* const ranges, const size_t len) {
 
-  rlep_t* out = alloc(rlep_t, len / 2);
+  sparse64_t* out = alloc(sparse64_t, len / 2);
 
   // i = ranges, j = out
   for (size_t i = 0, j = 0; i < len; i += 2, j++) {
@@ -131,7 +131,7 @@ rlep_t* rlep_ranges_to_addrs (const size_t* const ranges, const size_t len) {
 
 
 /*
-  rlep_t* -> size_t*
+  sparse64_t* -> size_t*
 
   list of ranges of zero indexes in the given array
 
@@ -153,8 +153,8 @@ rlep_t* rlep_ranges_to_addrs (const size_t* const ranges, const size_t len) {
     0s between indexes 1 and 2. the index 2 has a nonzero element
 */
 
-size_t* rlep_uncompress_zero_ranges (const rlep_t* const sps) {
-  const size_t len = rlep_len(sps), rlen = 2 * len;
+size_t* sparse64_uncompress_zero_ranges (const sparse64_t* const sps) {
+  const size_t len = sparse64_len(sps), rlen = 2 * len;
 
   size_t
     * const addrs = _pelements_addr(sps), // has length 'len'
@@ -185,13 +185,13 @@ size_t* rlep_uncompress_zero_ranges (const rlep_t* const sps) {
 }
 
 /*
-  rlep_t* -> rlep_t*
+  sparse64_t* -> sparse64_t*
 
   only the address elements from a sparse array
 */
 
-size_t* _pelements_addr (const rlep_t* const sps) {
-  const size_t len = rlep_len(sps);
+size_t* _pelements_addr (const sparse64_t* const sps) {
+  const size_t len = sparse64_len(sps);
   size_t* const out = alloc(size_t, len);
 
   // i = sps; j = out
@@ -204,12 +204,12 @@ size_t* _pelements_addr (const rlep_t* const sps) {
 }
 
 /*
-  rlep_t* -> size_t*
+  sparse64_t* -> size_t*
 
   only the data elements preceded by their real indexes from a sparse array
 */
-size_t* _pelements_data (const rlep_t* const sps) {
-  const size_t rlen = 2 * rlep_len(sps);
+size_t* _pelements_data (const sparse64_t* const sps) {
+  const size_t rlen = 2 * sparse64_len(sps);
   size_t* const
     out         = alloc(size_t, rlen),
     index_total = 0;
@@ -228,7 +228,7 @@ size_t* _pelements_data (const rlep_t* const sps) {
 }
 
 /*
-  rlep_t* -> size_t
+  sparse64_t* -> size_t
 
   number of elements this sparse array is emulating
 
@@ -236,10 +236,10 @@ size_t* _pelements_data (const rlep_t* const sps) {
 
   sum of address elements + number of data elements (or the number of address elements)
 */
-size_t rlep_len_virtual (const rlep_t* const sps) {
+size_t sparse64_len_virtual (const sparse64_t* const sps) {
 
   // address len
-  const size_t alen = rlep_len(sps);
+  const size_t alen = sparse64_len(sps);
 
   // the number of address elements is also the number of data elements
   size_t sum = alen;
@@ -254,12 +254,12 @@ size_t rlep_len_virtual (const rlep_t* const sps) {
 }
 
 /* number of EITHER data or address elements represented by this array */
-size_t   rlep_len (const rlep_t* const sps) {
+size_t   sparse64_len (const sparse64_t* const sps) {
   return sps[0];
 }
 
 /* number of actual bytes allocated by this array for primitive indexing */
-size_t  rlep_lenr (const rlep_t* const sps) {
+size_t  sparse64_lenr (const sparse64_t* const sps) {
   return _real_len(sps[0]);
 }
 
