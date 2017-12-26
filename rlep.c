@@ -62,7 +62,7 @@ rlep_t rlep_search_idx_linear (const rlep_t* const sps, const size_t get_index, 
 
   free(zero_ranges);
 
-  size_t* const elts = _elements_data(sps);
+  size_t* const elts = _pelements_data(sps);
 
   for (size_t i = 0; i < rlen; i += 2) {
     if (get_index == elts[i]) {
@@ -132,7 +132,7 @@ size_t* rlep_decode_zero_ranges (const rlep_t* const sps) {
   const size_t len = rlep_len(sps), rlen = 2 * len;
 
   size_t
-    * const addrs = _elements_addr(sps),   // has length 'len'
+    * const addrs = _pelements_addr(sps),   // has length 'len'
     * const out   = alloc(size_t, rlen), // has length 'rlen'
       index_total = 0;
 
@@ -165,7 +165,7 @@ size_t* rlep_decode_zero_ranges (const rlep_t* const sps) {
   only the address elements from a sparse array
 */
 
-size_t* _elements_addr (const rlep_t* const sps) {
+size_t* _pelements_addr (const rlep_t* const sps) {
   const size_t len = rlep_len(sps);
   size_t* const out = alloc(size_t, len);
 
@@ -183,7 +183,7 @@ size_t* _elements_addr (const rlep_t* const sps) {
 
   only the data elements preceded by their real indexes from a sparse array
 */
-size_t* _elements_data (const rlep_t* const sps) {
+size_t* _pelements_data (const rlep_t* const sps) {
   const size_t rlen = 2 * rlep_len(sps);
   size_t* const
     out         = alloc(size_t, rlen),

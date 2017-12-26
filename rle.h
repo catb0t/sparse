@@ -44,12 +44,14 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include "deps/yacbnl/yacbnl.min.c"
 
 #ifndef alloc
   #define alloc(type, size) malloc((sizeof (type)) * (size))
 #endif
 
 typedef uint64_t rlep_t;
+typedef bignum_t rley_t;
 
 rlep_t*        rlep_new (const uint64_t* const non_sparse, const size_t len);
 rlep_t         rlep_get (const rlep_t* const sps, const size_t index, bool* const ok);
@@ -66,10 +68,17 @@ rlep_t rlep_search_idx_binary (const rlep_t* const sps, const size_t index, bool
 rlep_t* rlep_decode_zero_ranges (const rlep_t* const sps);
 rlep_t* rlep_encode_zero_ranges (const uint64_t* const sps);
 
-rlep_t*    _elements_addr (const rlep_t* const sps);
-rlep_t*    _elements_data (const rlep_t* const sps);
+rlep_t*    _pelements_addr (const rlep_t* const sps);
+rlep_t*    _pelements_data (const rlep_t* const sps);
 size_t          _real_len (const size_t len);
 bool is_in_range (const size_t n, const size_t low, const size_t high);
+
+rley_t*        rley_new (const uint64_t* const non_sparse, const size_t len);
+rley_t         rley_get (const rley_t* const sps, const size_t index, bool* const ok);
+rley_t*     rley_insert (const rley_t* const sps, const size_t index, const rley_t value, bool* const ok);
+rley_t*     rley_delete (const rley_t* const sps, const size_t index, bool* const ok);
+
+rley_t*    _yelements_addr (const rley_t* const sps);
 
 /* non-sparse utilities */
 

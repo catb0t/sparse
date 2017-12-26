@@ -51,13 +51,13 @@ Test(prim, elts) {
   size_t b[8] = {0, 1, 2, 45, 124, 123, 1024, 923};
   size_t c[4] = {0, 1, 121, 899};
 
-  size_t* sp = _elements_addr(a);
+  size_t* sp = _pelements_addr(a);
 
   cr_assert_arr_eq(c, sp, 4);
 
   free(sp);
 
-  sp = _elements_data(a);
+  sp = _pelements_data(a);
 
   cr_assert_arr_eq(b, sp, 8);
 

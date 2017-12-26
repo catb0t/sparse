@@ -1,3 +1,6 @@
 #include "rle.h"
-#include "deps/yacbnl/yacbnl.min.c"
 
+rley_t*    _elements_addr (const rley_t* const sps) {
+  (void) sps;
+  return NULL;
+}
