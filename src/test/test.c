@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <criterion/criterion.h>
-#include "rle.h"
+#include "../rle.h"
 
 Test(prim, len) {
   rlep_t a[9] = {4, 0, 1, 0, 2, 121, 123, 899, 923};
@@ -69,7 +69,7 @@ Test(prim, dcz) {
   rlep_t a[9] = {4, 0, 1, 1, 45, 121, 98,   899,    923};
   size_t c[8] = {  0,0,  1,2,   3,124,    125,1024     };
 
-  size_t* f = rlep_decode_zero_ranges(a);
+  size_t* f = rlep_uncompress_zero_ranges(a);
 
   cr_assert_arr_eq(f, c, 8);
 
@@ -78,7 +78,7 @@ Test(prim, dcz) {
   rlep_t b[9] = {4, 4, 2,  7,   3,  11,  4,  14,   5};
   size_t d[8] = {  0,4,   5,12,    13,24,   25,39    };
 
-  f = rlep_decode_zero_ranges(b);
+  f = rlep_uncompress_zero_ranges(b);
 
   cr_assert_arr_eq(f, d, 8);
 

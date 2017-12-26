@@ -1,4 +1,4 @@
-#include "rle.h"
+#include "../rle.h"
 
 size_t ns_count_next_zeroes (const uint64_t* const array, const size_t len, const size_t idx) {
   if (idx + 1 > len || 0 == len) { return 0; }
@@ -25,9 +25,7 @@ size_t ns_count_nonzero_elts (const uint64_t* const array, const size_t len) {
 uint64_t* ns_nonzero_elts (const uint64_t* const array, const size_t len, size_t* const out_len) {
 
   if (0 == len) {
-    if (NULL != out_len) {
-      *out_len = 0;
-    }
+    set_out_param(out_len, 0);
     return alloc(uint64_t, 0);
   }
 
@@ -42,30 +40,24 @@ uint64_t* ns_nonzero_elts (const uint64_t* const array, const size_t len, size_t
     }
   }
 
-  if (NULL != out_len) {
-    *out_len = j;
-  }
+  set_out_param(out_len, j);
 
   return out;
 
 }
 
-uint64_t* ns_zero_ranges (const uint64_t* const array, const size_t len, size_t* const out_len) {
+size_t* ns_zero_ranges (const uint64_t* const array, const size_t len, size_t* const out_len) {
 
   if (0 == len) {
-    if (NULL != out_len) {
-      *out_len = 0;
-    }
-    return alloc(uint64_t, 0);
+    set_out_param(out_len, 0);
+    return alloc(size_t, 0);
   }
 
   const size_t czr = 2 * ns_count_zero_ranges(array, len);
 
-  if (NULL != out_len) {
-    *out_len = czr;
-  }
+  set_out_param(out_len, czr);
 
-  uint64_t* const out = alloc(uint64_t, len * 2);
+  size_t* const out = alloc(size_t, len * 2);
 
   // i = len; j = out
   for (size_t i = 0, j = 0; i < len; i++, j += 2) {
@@ -75,7 +67,7 @@ uint64_t* ns_zero_ranges (const uint64_t* const array, const size_t len, size_t*
     }
   }
 
-  return realloc(out, czr * sizeof (uint64_t));
+  return realloc(out, czr * sizeof (size_t));
 }
 
 size_t ns_count_zero_ranges (const uint64_t* const array, const size_t len) {

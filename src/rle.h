@@ -44,10 +44,14 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include "deps/yacbnl/yacbnl.min.h"
+#include "../deps/yacbnl/yacbnl.min.h"
 
 #ifndef alloc
   #define alloc(type, size) malloc((sizeof (type)) * (size))
+#endif
+
+#ifndef set_out_param
+  #define set_out_param(name, value) if(NULL!=(name)){*name=value;}
 #endif
 
 typedef uint64_t rlep_t;
@@ -65,8 +69,9 @@ size_t rlep_len_virtual (const rlep_t* const sps);
 rlep_t rlep_search_idx_linear (const rlep_t* const sps, const size_t index, bool* const ok);
 rlep_t rlep_search_idx_binary (const rlep_t* const sps, const size_t index, bool* const ok);
 
-rlep_t* rlep_decode_zero_ranges (const rlep_t* const sps);
-rlep_t* rlep_encode_zero_ranges (const uint64_t* const sps);
+rlep_t*        rlep_ranges_to_addrs (const size_t* const ranges, const size_t len);
+rlep_t* rlep_uncompress_zero_ranges (const rlep_t* const sps);
+size_t*   rlep_compress_zero_ranges (const uint64_t* const nonsparse, const size_t len, size_t* const out_len);
 
 rlep_t*    _pelements_addr (const rlep_t* const sps);
 rlep_t*    _pelements_data (const rlep_t* const sps);

@@ -31,25 +31,26 @@ workspace "rle_array"
   project "interact"
     kind "consoleapp"
 
-    files { "interact.c" }
+    files { path.join("src", "interact.c") }
     links { "sparse" }
 
   project "sparse"
     kind "staticlib"
 
-    files { "rlep.c", "nonsparse.c", "yacbnl" }
+    files { path.join("src", "primitive", "*.c"), path.join("src", "yacbnl", "*c") }
+    links { "yacbnl" }
 
   project "test"
     kind "consoleapp"
 
-    files { "test.c" }
+    files { path.join("src", "test", "*.c") }
     links { "criterion", "sparse" }
 
     targetname "test_rle"
 
   project "yacbnl"
     kind "staticlib"
-    files { "deps/yacbnl/yacbnl.min.c" }
+    files { path.join("deps", "yacbnl", "yacbnl.min.c") }
     links { "m" }
 
   project "clobber"

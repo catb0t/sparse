@@ -2,7 +2,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <inttypes.h>
-#include "rle.h"
+#include "../rle.h"
 
 rlep_t* rlep_new (const uint64_t* const non_sparse, const uint64_t len) {
   rlep_t* const out = malloc( _real_len( ns_count_nonzero_elts(non_sparse, len) ) );
@@ -24,8 +24,11 @@ rlep_t* rlep_new (const uint64_t* const non_sparse, const uint64_t len) {
 */
 rlep_t   rlep_get (const rlep_t* const sps, const size_t index, bool* const ok) {
 
+//#ifdef LINEAR_SEARCH_GET
   return rlep_search_idx_linear(sps, index, ok);
-
+//#else
+//  return rlep_search_idx_binary(sps, index, ok);
+//#endif
 }
 
 /*
@@ -33,24 +36,29 @@ rlep_t   rlep_get (const rlep_t* const sps, const size_t index, bool* const ok) 
   not for a value.
 */
 
+/*
+  rlep_t*, size_t, bool* -> rlep_t
 
+  given an index, find the value at that index in sps through searching linearly
+    from left to right
+
+  looking up zeroes is faster than looking up non-zeroes
+*/
 rlep_t rlep_search_idx_linear (const rlep_t* const sps, const size_t get_index, bool* const ok) {
 
-  if ( NULL != ok ) {
-    *ok = true;
-  }
+  set_out_param(ok, true);
 
   const size_t vlen = rlep_len_virtual(sps);
 
   if (get_index > vlen) {
     errno = EINVAL;
-    if (NULL != ok) { *ok = false; }
+    set_out_param(ok, false);
     return 0;
   }
 
   const size_t len = rlep_len(sps), rlen = 2 * len;
 
-  size_t* const zero_ranges = rlep_decode_zero_ranges(sps);
+  size_t* const zero_ranges = rlep_uncompress_zero_ranges(sps);
 
   // if the index is within a zero range the value is zero
   for (size_t i = 0; i < rlen; i += 2) {
@@ -76,9 +84,8 @@ rlep_t rlep_search_idx_linear (const rlep_t* const sps, const size_t get_index, 
   // no entry
   errno = ENOENT;
 
-  if ( NULL != ok ) {
-    *ok = false;
-  }
+  set_out_param(ok, false);
+
   return 0;
 }
 
@@ -93,16 +100,35 @@ rlep_t rlep_search_idx_binary (const rlep_t* const sps, const size_t index, bool
   uint64_t* -> size_t*
 
   runs of one or more zeroes to ranges
+
+  wrapper for ns_zero_ranges
+
+  non-null out_len is modified and set to ns_count_zero_ranges()
 */
-size_t* rlep_encode_zero_ranges (const uint64_t* const sps) {
-  const size_t len = rlep_len(sps), rlen = 2 * len;
+size_t* rlep_compress_zero_ranges (const uint64_t* const nonsparse, const size_t len, size_t* const out_len) {
+  return ns_zero_ranges(nonsparse, len, out_len);
+}
 
-  size_t* out = alloc(size_t, rlen);
 
+/*
+  size_t*, size_t -> rlep_t*
 
+  ranges (from a non-sparse array) to address offset elements
+
+  the length of the result is exactly half the length of the input
+*/
+rlep_t* rlep_ranges_to_addrs (const size_t* const ranges, const size_t len) {
+
+  rlep_t* out = alloc(rlep_t, len / 2);
+
+  // i = ranges, j = out
+  for (size_t i = 0, j = 0; i < len; i += 2, j++) {
+    out[j] = ranges[i + 1] - ranges[i];
+  }
 
   return out;
 }
+
 
 /*
   rlep_t* -> size_t*
@@ -127,12 +153,12 @@ size_t* rlep_encode_zero_ranges (const uint64_t* const sps) {
     0s between indexes 1 and 2. the index 2 has a nonzero element
 */
 
-size_t* rlep_decode_zero_ranges (const rlep_t* const sps) {
+size_t* rlep_uncompress_zero_ranges (const rlep_t* const sps) {
   const size_t len = rlep_len(sps), rlen = 2 * len;
 
   size_t
-    * const addrs = _pelements_addr(sps),   // has length 'len'
-    * const out   = alloc(size_t, rlen), // has length 'rlen'
+    * const addrs = _pelements_addr(sps), // has length 'len'
+    * const out   = alloc(size_t, rlen),  // has length 'rlen'
       index_total = 0;
 
   // i = addrs; j = out
