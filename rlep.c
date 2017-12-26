@@ -5,7 +5,7 @@
 #include "rle.h"
 
 rlep_t* rlep_new (const uint64_t* const non_sparse, const uint64_t len) {
-  rlep_t* out = malloc( _real_len( ns_count_nonzero_elts(non_sparse, len) ) );
+  rlep_t* const out = malloc( _real_len( ns_count_nonzero_elts(non_sparse, len) ) );
 
   return out;
 }
@@ -31,7 +31,6 @@ rlep_t   rlep_get (const rlep_t* const sps, const size_t index, bool* const ok) 
 /*
   it is important to note that the rlep_search_idx_* functions search for an *index*!
   not for a value.
-  if the index
 */
 
 

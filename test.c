@@ -1,5 +1,5 @@
-#include <criterion/criterion.h>
 #include <stdio.h>
+#include <criterion/criterion.h>
 #include "rle.h"
 
 Test(prim, len) {
@@ -94,16 +94,20 @@ Test(prim, ns_range) {
   uint64_t a[28] = {0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,1};
   uint64_t b[6] = {0, 7, 9, 15, 21, 26};
 
-  uint64_t* res = ns_zero_ranges(a, 28);
+  size_t len;
 
-  cr_assert_arr_eq(b, res, 6);
+  uint64_t* res = ns_zero_ranges(a, 28, &len);
+
+  cr_assert_eq(6, len);
+  cr_assert_arr_eq(b, res, len);
 
   free(res);
   uint64_t c[] = {1,1,1,1,1,1,1,1,1};
 
-  res = ns_nonzero_elts(a, 28);
+  res = ns_nonzero_elts(a, 28, &len);
 
-  cr_assert_arr_eq(c, res, 9);
+  cr_assert_eq(9, len);
+  cr_assert_arr_eq(c, res, len);
 
   free(res);
 }

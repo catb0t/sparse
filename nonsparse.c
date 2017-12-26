@@ -22,41 +22,72 @@ size_t ns_count_nonzero_elts (const uint64_t* const array, const size_t len) {
   return ct;
 }
 
-uint64_t* ns_nonzero_elts (const uint64_t* const array, const size_t len) {
+uint64_t* ns_nonzero_elts (const uint64_t* const array, const size_t len, size_t* const out_len) {
 
-  if (0 == len) { return alloc(uint64_t, 0); }
+  if (0 == len) {
+    if (NULL != out_len) {
+      *out_len = 0;
+    }
+    return alloc(uint64_t, 0);
+  }
 
-  uint64_t* const out = alloc(uint64_t, len);
+  uint64_t* const out = alloc(uint64_t, ns_count_nonzero_elts(array, len));
 
   size_t j = 0;
 
   // i = array; j = out
   for (size_t i = 0; i < len; i++) {
-    if (0 != array[i]) {
+    if ( 0 != array[i] ) {
       out[j++] = array[i];
     }
   }
 
-  return realloc(out, (1 + j) * sizeof (uint64_t));
+  if (NULL != out_len) {
+    *out_len = j;
+  }
+
+  return out;
 
 }
 
-uint64_t* ns_zero_ranges (const uint64_t* const array, const size_t len) {
+uint64_t* ns_zero_ranges (const uint64_t* const array, const size_t len, size_t* const out_len) {
 
-  if (0 == len) { return alloc(uint64_t, 1); }
+  if (0 == len) {
+    if (NULL != out_len) {
+      *out_len = 0;
+    }
+    return alloc(uint64_t, 0);
+  }
+
+  const size_t czr = 2 * ns_count_zero_ranges(array, len);
+
+  if (NULL != out_len) {
+    *out_len = czr;
+  }
 
   uint64_t* const out = alloc(uint64_t, len * 2);
 
-  size_t j = 0;
-
   // i = len; j = out
-  for (size_t i = 0; i < len; i++, j += 2) {
+  for (size_t i = 0, j = 0; i < len; i++, j += 2) {
     if (0 == array[i]) {
       out[j] = i;
       out[j + 1] = i + ns_count_next_zeroes(array, len, i);
     }
   }
 
-  return out; //realloc(out, (1 + j) * sizeof (uint64_t));
+  return realloc(out, czr * sizeof (uint64_t));
+}
 
+size_t ns_count_zero_ranges (const uint64_t* const array, const size_t len) {
+
+  size_t ranges = 0;
+
+  for (size_t i = 0; i < len; i++) {
+    if (0 == array[i]) {
+      ranges++;
+      i += ns_count_next_zeroes(array, len, i) - 1;
+    }
+  }
+
+  return ranges;
 }

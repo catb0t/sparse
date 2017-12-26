@@ -19,7 +19,7 @@ workspace "rle_array"
     }
 
   filter "configurations:dbg"
-    buildoptions { "-ggdb3", "-Og" }
+    buildoptions { "-ggdb", "-O0", "-g3" }
     symbols "on"
     optimize "off"
 
@@ -43,7 +43,7 @@ workspace "rle_array"
     kind "consoleapp"
 
     files { "test.c" }
-    links { "criterion", "sparse", }
+    links { "criterion", "sparse" }
 
     targetname "test_rle"
 

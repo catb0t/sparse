@@ -5,15 +5,18 @@
 
 int main(void) {
 
-  #define BIG 100000000
-  rlep_t* const b = alloc(rlep_t, BIG + 1);
-  b[0] = BIG / 2;
-  for (size_t i = 1; i < BIG + 1; i++) {
-    b[i] = BIG;
-  }
+  uint64_t a[28] = {0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,1};
+  //uint64_t b[6] = {0, 7, 9, 15, 21, 26};
 
-  rlep_search_idx_linear(b, BIG, NULL);
+  size_t len;
 
-  free(b);
+  uint64_t* res = ns_zero_ranges(a, 28, &len);
+
+  free(res);
+  //uint64_t c[] = {1,1,1,1,1,1,1,1,1};
+
+  res = ns_nonzero_elts(a, 28, &len);
+
+  free(res);
   return 0;
 }

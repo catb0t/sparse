@@ -82,9 +82,9 @@ rley_t*    _yelements_addr (const rley_t* const sps);
 
 /* non-sparse utilities */
 
-uint64_t*     ns_zero_ranges (const uint64_t* const array, const size_t len);
-uint64_t*    ns_nonzero_elts (const uint64_t* const array, const size_t len);
+uint64_t*     ns_zero_ranges (const uint64_t* const array, const size_t len, size_t* const out_len);
+uint64_t*    ns_nonzero_elts (const uint64_t* const array, const size_t len, size_t* const out_len);
 size_t  ns_count_next_zeroes (const uint64_t* const array, const size_t len, const size_t idx);
 size_t ns_count_nonzero_elts (const uint64_t* const array, const size_t len);
-
+size_t  ns_count_zero_ranges (const uint64_t* const array, const size_t len);
 #endif
