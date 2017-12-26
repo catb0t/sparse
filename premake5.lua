@@ -8,7 +8,7 @@ workspace "sparse_array"
 
   filter { "action:gmake*", "toolset:gcc" }
     buildoptions {
-      "-Wall", "-Wextra", "-Wfloat-equal", "-Winline", "-Wundef", "-Werror",
+      "-Wall", "-std=c11", "-Wextra", "-Wfloat-equal", "-Winline", "-Wundef", "-Werror",
       "-fverbose-asm", "-Wint-to-pointer-cast", "-Wshadow", "-Wpointer-arith",
       "-Wcast-align", "-Wcast-qual", "-Wunreachable-code", "-Wstrict-overflow=5",
       "-Wwrite-strings", "-Wconversion", "--pedantic-errors",
