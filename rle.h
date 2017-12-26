@@ -44,7 +44,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include "deps/yacbnl/yacbnl.min.c"
+#include "deps/yacbnl/yacbnl.min.h"
 
 #ifndef alloc
   #define alloc(type, size) malloc((sizeof (type)) * (size))

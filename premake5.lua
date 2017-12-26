@@ -19,7 +19,7 @@ workspace "rle_array"
     }
 
   filter "configurations:dbg"
-    buildoptions { "-ggdb3", "-O0" }
+    buildoptions { "-ggdb3", "-Og" }
     symbols "on"
     optimize "off"
 
@@ -37,15 +37,20 @@ workspace "rle_array"
   project "sparse"
     kind "staticlib"
 
-    files { "rlep.c", "nonsparse.c" }
+    files { "rlep.c", "nonsparse.c", "yacbnl" }
 
   project "test"
     kind "consoleapp"
 
     files { "test.c" }
-    links { "criterion", "sparse" }
+    links { "criterion", "sparse", }
 
     targetname "test_rle"
+
+  project "yacbnl"
+    kind "staticlib"
+    files { "deps/yacbnl/yacbnl.min.c" }
+    links { "m" }
 
   project "clobber"
     kind "makefile"
