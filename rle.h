@@ -45,7 +45,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define alloc(type, size) malloc((sizeof (type)) * (size))
+#ifndef alloc
+  #define alloc(type, size) malloc((sizeof (type)) * (size))
+#endif
 
 typedef uint64_t rlep_t;
 
