@@ -18,7 +18,7 @@
     "src/primitive/sparse.c",
     "src/yacbnl/nonsparse.c",
     "src/yacbnl/sparse.c",
-    "src/sparse.c",
+    "src/unify_sparse.c",
     "README.md",
     "LICENSE"
   ]
