@@ -53,8 +53,8 @@ workspace "sparse_array"
     files { path.join("deps", "yacbnl", "yacbnl.min.c") }
     links { "m" }
 
-  project "concatenate"
-    kind "utility"
+--  project "concatenate"
+--    kind "utility"
 
   project "clobber"
     kind "makefile"
