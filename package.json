@@ -14,10 +14,10 @@
   "license": "GPL v3",
   "src": [
     "src/sparse.h",
-    "src/primitive/nonsparse.c",
-    "src/primitive/sparse.c",
-    "src/yacbnl/nonsparse.c",
-    "src/yacbnl/sparse.c",
+    "src/primitive/64_nonsparse.c",
+    "src/primitive/64_sparse.c",
+    "src/yacbnl/bn_nonsparse.c",
+    "src/yacbnl/bn_sparse.c",
     "src/unify_sparse.c",
     "README.md",
     "LICENSE"
