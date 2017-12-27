@@ -18,7 +18,6 @@
     "src/primitive/64_sparse.c",
     "src/yacbnl/bn_nonsparse.c",
     "src/yacbnl/bn_sparse.c",
-    "src/unify_sparse.c",
     "README.md",
     "LICENSE"
   ]
