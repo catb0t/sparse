@@ -10,20 +10,6 @@ Test(prim, len) {
   cr_assert_eq(4 + 1020, sparse64_len_virtual(a));
 }
 
-Test(prim, ns_count) {
-
-  uint64_t b[34] = {1, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 34};
-
-  cr_assert_eq(2, ns_count_nonzero_elts(b, 34));
-
-  uint64_t c[34] = {1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 34};
-
-  cr_assert_eq(34, ns_count_nonzero_elts(c, 34));
-
-  cr_assert_eq(32, ns_count_next_zeroes(b, 34, 1));
-  cr_assert_eq(0, ns_count_next_zeroes(c, 34, 1));
-}
-
 Test(prim, lsch) {
 
   sparse64_t a[9] = {4, 0, 1, 1, 45, 121, 123, 899, 923};
@@ -51,20 +37,20 @@ Test(prim, elts) {
   size_t b[8] = {0, 1, 2, 45, 124, 123, 1024, 923};
   size_t c[4] = {0, 1, 121, 899};
 
-  size_t* sp = _pelements_addr(a);
+  size_t* sp = _elements_addr_64(a);
 
   cr_assert_arr_eq(c, sp, 4);
 
   free(sp);
 
-  sp = _pelements_data(a);
+  sp = _elements_data_64(a);
 
   cr_assert_arr_eq(b, sp, 8);
 
   free(sp);
 }
 
-Test(prim, dcz) {
+Test(prim, uncompress) {
   /*                   0      2      124           1024*/
   sparse64_t a[9] = {4, 0, 1, 1, 45, 121, 98,   899,    923};
   size_t c[8] = {  0,0,  1,2,   3,124,    125,1024     };
@@ -86,28 +72,7 @@ Test(prim, dcz) {
 }
 
 Test(prim, in_range) {
-  cr_assert(! is_in_range(0, 0, 0));
-  cr_assert(  is_in_range(1, 1, 2));
+  cr_assert(! is_in_range_64(0, 0, 0));
+  cr_assert(  is_in_range_64(1, 1, 2));
 }
 
-Test(prim, ns_range) {
-  uint64_t a[28] = {0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,1};
-  uint64_t b[6] = {0, 7, 9, 15, 21, 26};
-
-  size_t len;
-
-  uint64_t* res = ns_zero_ranges(a, 28, &len);
-
-  cr_assert_eq(6, len);
-  cr_assert_arr_eq(b, res, len);
-
-  free(res);
-  uint64_t c[] = {1,1,1,1,1,1,1,1,1};
-
-  res = ns_nonzero_elts(a, 28, &len);
-
-  cr_assert_eq(9, len);
-  cr_assert_arr_eq(c, res, len);
-
-  free(res);
-}

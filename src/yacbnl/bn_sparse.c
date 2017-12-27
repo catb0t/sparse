@@ -1,6 +1,6 @@
 #include "../sparse.h"
 
-sparsebn_t*    _yelements_addr (const sparsebn_t* const sps) {
+sparsebn_t*    _elements_addr_bn (const sparsebn_t* const sps) {
   (void) sps;
   return NULL;
 }

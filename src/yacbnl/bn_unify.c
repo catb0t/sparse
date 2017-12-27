@@ -1,2 +1,2 @@
-#include "nonsparse.c"
-#include "sparse.c"
+#include "bn_nonsparse.c"
+#include "bn_sparse.c"

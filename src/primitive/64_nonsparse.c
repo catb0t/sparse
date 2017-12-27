@@ -1,6 +1,6 @@
 #include "../sparse.h"
 
-size_t ns_count_next_zeroes (const uint64_t* const array, const size_t len, const size_t idx) {
+size_t ns64_count_next_zeroes (const uint64_t* const array, const size_t len, const size_t idx) {
   if (idx + 1 > len || 0 == len) { return 0; }
 
   size_t zs = 0;
@@ -12,7 +12,7 @@ size_t ns_count_next_zeroes (const uint64_t* const array, const size_t len, cons
   return zs;
 }
 
-size_t ns_count_nonzero_elts (const uint64_t* const array, const size_t len) {
+size_t ns64_count_nonzero_elts (const uint64_t* const array, const size_t len) {
   size_t ct = 0;
 
   for (size_t i = 0; i < len; i++) {
@@ -22,14 +22,19 @@ size_t ns_count_nonzero_elts (const uint64_t* const array, const size_t len) {
   return ct;
 }
 
-uint64_t* ns_nonzero_elts (const uint64_t* const array, const size_t len, size_t* const out_len) {
+size_t ns64_count_adjacent_nonzero_elts (const uint64_t* const array, const size_t len) {
+  (void) array;
+  (void) len;
+  return 0;
+}
+
+uint64_t* ns64_nonzero_elts (const uint64_t* const array, const size_t len) {
 
   if (0 == len) {
-    set_out_param(out_len, 0);
-    return alloc(uint64_t, 0);
+    return alloc(uint64_t, len);
   }
 
-  uint64_t* const out = alloc(uint64_t, ns_count_nonzero_elts(array, len));
+  uint64_t* const out = alloc(uint64_t, ns64_count_nonzero_elts(array, len));
 
   size_t j = 0;
 
@@ -40,46 +45,31 @@ uint64_t* ns_nonzero_elts (const uint64_t* const array, const size_t len, size_t
     }
   }
 
-  set_out_param(out_len, j);
-
   return out;
 
 }
 
-size_t* ns_zero_ranges (const uint64_t* const array, const size_t len, size_t* const out_len) {
-
-  if (0 == len) {
-    set_out_param(out_len, 0);
-    return alloc(size_t, 0);
-  }
-
-  const size_t czr = 2 * ns_count_zero_ranges(array, len);
-
-  set_out_param(out_len, czr);
-
-  size_t* const out = alloc(size_t, len * 2);
-
-  // i = len; j = out
-  for (size_t i = 0, j = 0; i < len; i++, j += 2) {
-    if (0 == array[i]) {
-      out[j] = i;
-      out[j + 1] = i + ns_count_next_zeroes(array, len, i);
-    }
-  }
-
-  return realloc(out, czr * sizeof (size_t));
+size_t* ns64_zero_ranges (const uint64_t* const array, const size_t len) {
+  (void) array;
+  (void) len;
+  return NULL;
 }
 
-size_t ns_count_zero_ranges (const uint64_t* const array, const size_t len) {
-
+static size_t real_zero_ranges (const uint64_t* const array, const size_t len) {
   size_t ranges = 0;
 
   for (size_t i = 0; i < len; i++) {
     if (0 == array[i]) {
       ranges++;
-      i += ns_count_next_zeroes(array, len, i) - 1;
+      i += ns64_count_next_zeroes(array, len, i) - 1;
     }
   }
 
   return ranges;
+}
+
+size_t ns64_count_zero_ranges (const uint64_t* const array, const size_t len) {
+  // there is a zero range between two nonzero elements, it has length zero
+
+  return real_zero_ranges(array, len) + ns64_count_adjacent_nonzero_elts(array, len) - 1;
 }

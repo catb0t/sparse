@@ -4,10 +4,58 @@
 #include <inttypes.h>
 #include "../sparse.h"
 
+/*
+  uint64_t*, uint64_t -> sparse64_t*
+
+  compress an array into a sparse array
+*/
 sparse64_t* sparse64_new (const uint64_t* const non_sparse, const uint64_t len) {
-  sparse64_t* const out = malloc( _real_len( ns_count_nonzero_elts(non_sparse, len) ) );
+
+  size_t
+        len_ranges = ns64_count_zero_ranges(non_sparse, len),
+          len_data = ns64_count_nonzero_elts(non_sparse, len),
+    * const ranges = sparse64_compress_zero_ranges(non_sparse, len);
+  uint64_t*   data = ns64_nonzero_elts(non_sparse, len);
+  sparse64_t*  out = sparse64_combine_values(data, ranges, len_data, len_ranges);
+
+  free(data);
+  free(ranges);
 
   return out;
+}
+
+/*
+  -> sparse64_t*
+
+  new blank sparse array of size 1, ending with a zero element
+*/
+sparse64_t* sparse64_blank (void) {
+  static const sparse64_t template[3] = {1, 0, 0};
+  return memcpy(alloc(sparse64_t, 3), template, 3);
+}
+
+/*
+  sparse64_t*, size_t, sparse64_t, bool* -> sparse64_t
+
+  add a value to the index given
+
+  failure is recorded by errno and ok
+
+  the input array is never modified
+*/
+sparse64_t*     sparse64_insert (const sparse64_t* const sps, const size_t index, const sparse64_t value, bool* const ok) {
+  (void) sps;
+  (void) index;
+  (void) value;
+  (void) ok;
+  return NULL;
+}
+
+sparse64_t*     sparse64_delete (const sparse64_t* const sps, const size_t index, bool* const ok) {
+  (void) sps;
+  (void) index;
+  (void) ok;
+  return NULL;
 }
 
 /*
@@ -62,14 +110,14 @@ sparse64_t sparse64_search_idx_linear (const sparse64_t* const sps, const size_t
 
   // if the index is within a zero range the value is zero
   for (size_t i = 0; i < rlen; i += 2) {
-    if ( is_in_range(get_index, zero_ranges[i], zero_ranges[i + 1]) ) {
+    if ( is_in_range_64(get_index, zero_ranges[i], zero_ranges[i + 1]) ) {
       return 0;
     }
   }
 
   free(zero_ranges);
 
-  size_t* const elts = _pelements_data(sps);
+  size_t* const elts = _elements_data_64(sps);
 
   for (size_t i = 0; i < rlen; i += 2) {
     if (get_index == elts[i]) {
@@ -97,6 +145,33 @@ sparse64_t sparse64_search_idx_binary (const sparse64_t* const sps, const size_t
 }
 
 /*
+  uint64_t*, size_t*, size_t -> sparse64_t*
+
+  intersperse addrs and data values to make a valid sparse array
+*/
+sparse64_t* sparse64_combine_values(const uint64_t* const data, const size_t* ranges, const size_t data_len, const size_t count_ranges) {
+  (void) ranges; (void) count_ranges;
+  sparse64_t* const out = alloc(sparse64_t, _real_len_64(data_len));
+
+  out[0] = data_len;
+
+  const size_t rlen = data_len * 2;
+
+  // i = out, j = data, k = addrs
+  for (size_t i = 1, j = 0, k = 0; i < rlen; i++) {
+    // odd offsets are address values
+    if (0 != i % 2) {
+      out[i] = ranges[k++];
+    // even offsets are data values
+    } else {
+      out[i] = data[j++];
+    }
+  }
+
+  return out;
+}
+
+/*
   uint64_t* -> size_t*
 
   runs of one or more zeroes to ranges
@@ -105,8 +180,8 @@ sparse64_t sparse64_search_idx_binary (const sparse64_t* const sps, const size_t
 
   non-null out_len is modified and set to ns_count_zero_ranges()
 */
-size_t* sparse64_compress_zero_ranges (const uint64_t* const nonsparse, const size_t len, size_t* const out_len) {
-  return ns_zero_ranges(nonsparse, len, out_len);
+size_t* sparse64_compress_zero_ranges (const uint64_t* const nonsparse, const size_t len) {
+  return ns64_zero_ranges(nonsparse, len);
 }
 
 
@@ -157,7 +232,7 @@ size_t* sparse64_uncompress_zero_ranges (const sparse64_t* const sps) {
   const size_t len = sparse64_len(sps), rlen = 2 * len;
 
   size_t
-    * const addrs = _pelements_addr(sps), // has length 'len'
+    * const addrs = _elements_addr_64(sps), // has length 'len'
     * const out   = alloc(size_t, rlen),  // has length 'rlen'
       index_total = 0;
 
@@ -190,7 +265,7 @@ size_t* sparse64_uncompress_zero_ranges (const sparse64_t* const sps) {
   only the address elements from a sparse array
 */
 
-size_t* _pelements_addr (const sparse64_t* const sps) {
+size_t* _elements_addr_64 (const sparse64_t* const sps) {
   const size_t len = sparse64_len(sps);
   size_t* const out = alloc(size_t, len);
 
@@ -208,7 +283,7 @@ size_t* _pelements_addr (const sparse64_t* const sps) {
 
   only the data elements preceded by their real indexes from a sparse array
 */
-size_t* _pelements_data (const sparse64_t* const sps) {
+size_t* _elements_data_64 (const sparse64_t* const sps) {
   const size_t rlen = 2 * sparse64_len(sps);
   size_t* const
     out         = alloc(size_t, rlen),
@@ -260,11 +335,11 @@ size_t   sparse64_len (const sparse64_t* const sps) {
 
 /* number of actual bytes allocated by this array for primitive indexing */
 size_t  sparse64_lenr (const sparse64_t* const sps) {
-  return _real_len(sps[0]);
+  return _real_len_64(sps[0]);
 }
 
 /* algorithm for determining real number of elements */
-size_t _real_len (const size_t len) {
+size_t _real_len_64 (const size_t len) {
   return 1 + (2 * len);
 }
 
@@ -273,7 +348,7 @@ size_t _real_len (const size_t len) {
 
   python-style range: lower-exclusive, higher-inclusive
 */
-bool is_in_range (const size_t n, const size_t low, const size_t high) {
+bool is_in_range_64 (const size_t n, const size_t low, const size_t high) {
   if ( 0 == (low + high) ) { return false; }
   return n >= low && n < high;
 }
