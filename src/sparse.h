@@ -89,10 +89,11 @@ sparsebn_t*    _elements_addr_bn (const sparsebn_t* const sps);
 
 /* non-sparse primitive utilities */
 
-uint64_t*              ns64_zero_ranges (const uint64_t* const array, const size_t len);
-uint64_t*             ns64_nonzero_elts (const uint64_t* const array, const size_t len);
-size_t           ns64_count_next_zeroes (const uint64_t* const array, const size_t len, const size_t idx);
-size_t    ns64_count_adjc_nonzero_pairs (const uint64_t* const array, const size_t len);
-size_t          ns64_count_nonzero_elts (const uint64_t* const array, const size_t len);
-size_t           ns64_count_zero_ranges (const uint64_t* const array, const size_t len);
+size_t*               ns64_zero_ranges (const uint64_t* const array, const size_t len);
+uint64_t*            ns64_nonzero_elts (const uint64_t* const array, const size_t len);
+uint64_t*       ns64_nonzero_elts_idxs (const uint64_t* const array, const size_t len);
+size_t          ns64_count_next_zeroes (const uint64_t* const array, const size_t len, const size_t idx);
+size_t   ns64_count_adjc_nonzero_pairs (const uint64_t* const array, const size_t len);
+size_t         ns64_count_nonzero_elts (const uint64_t* const array, const size_t len);
+size_t          ns64_count_zero_ranges (const uint64_t* const array, const size_t len);
 #endif
