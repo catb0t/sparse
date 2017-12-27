@@ -1,6 +1,6 @@
 {
   "name": "sparse",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "repo": "catb0t/sparse",
   "description": "Sparse arrays implemented by run-length-encoding regions of zeroes",
   "keywords": [
