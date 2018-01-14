@@ -2,7 +2,7 @@ workspace "sparse_array"
 
   configurations { "dbg", "dist" }
 
-  flags { "fatalwarnings", "linktimeoptimization" }
+  flags { "fatalwarnings" }
 
   targetdir "bin/%{cfg.buildcfg}/"
 
@@ -17,6 +17,7 @@ workspace "sparse_array"
       "-Wmissing-prototypes", "-Wnested-externs", "-Wold-style-declaration",
       "-Wold-style-definition", "-Wstrict-prototypes", "-Wpointer-sign"
     }
+    flags { "linktimeoptimization" }
 
   filter "configurations:dbg"
     buildoptions { "-ggdb", "-O0", "-g3" }
