@@ -51,49 +51,24 @@
 #endif
 
 #ifndef set_out_param
-  #define set_out_param(name, value) if(NULL!=(name)){*name=value;}
+  #define set_out_param(name, value) if(NULL!=(name)){*(name)=value;}
 #endif
 
-typedef uint64_t sparse64_t;
-typedef bignum_t* sparsebn_t;
+/* an actual number is an atom */
+typedef uint64_t sps_atom_t;
+/* a pair of these make a descriptor_t */
+typedef sps_atom_t* sps_desc_t;
+/* an array of these pairs makes a sparse64 array */
+typedef sps_desc_t sparse64_t;
 
-sparse64_t*        sparse64_new (const uint64_t* const non_sparse, const size_t len);
-sparse64_t*      sparse64_blank (void);
-sparse64_t         sparse64_get (const sparse64_t* const sps, const size_t index, bool* const ok);
-sparse64_t*     sparse64_insert (const sparse64_t* const sps, const size_t index, const sparse64_t value, bool* const ok);
-sparse64_t*     sparse64_delete (const sparse64_t* const sps, const size_t index, bool* const ok);
+sparse64_t*   sparse64_new (const uint64_t* const src, const size_t len);
+sparse64_t* sparse64_blank (void);
 
-size_t         sparse64_len (const sparse64_t* const sps);
-size_t        sparse64_lenr (const sparse64_t* const sps);
-size_t sparse64_len_virtual (const sparse64_t* const sps);
+size_t    sparse64_len_fake (const sparse64_t* const sps);
+size_t    sparse64_len_real (const sparse64_t* const sps);
+size_t sparse64_len_virtual (const sparse64_t* const sps, bignum_t* const * const out_len);
 
-sparse64_t sparse64_search_idx_linear (const sparse64_t* const sps, const size_t index, bool* const ok);
-sparse64_t sparse64_search_idx_binary (const sparse64_t* const sps, const size_t index, bool* const ok);
+char*    sparse64_see_real (const sparse64_t* const sps);
+char* sparse64_see_virtual (const sparse64_t* const sps, const bool abbr);
 
-sparse64_t*          sparse64_combine_values(const uint64_t* const data, const size_t* addrs, const size_t data_len, const size_t addrs_len);
-sparse64_t*        sparse64_ranges_to_addrs (const size_t* const ranges, const size_t len);
-sparse64_t* sparse64_uncompress_zero_ranges (const sparse64_t* const sps);
-size_t*       sparse64_compress_zero_ranges (const uint64_t* const nonsparse, const size_t len);
-
-sparse64_t* _elements_addr_64 (const sparse64_t* const sps);
-sparse64_t* _elements_data_64 (const sparse64_t* const sps);
-size_t           _real_len_64 (const size_t len);
-bool           is_in_range_64 (const size_t n, const size_t low, const size_t high);
-
-sparsebn_t*        sparsebn_new (const uint64_t* const non_sparse, const size_t len);
-sparsebn_t         sparsebn_get (const sparsebn_t* const sps, const size_t index, bool* const ok);
-sparsebn_t*     sparsebn_insert (const sparsebn_t* const sps, const size_t index, const sparsebn_t value, bool* const ok);
-sparsebn_t*     sparsebn_delete (const sparsebn_t* const sps, const size_t index, bool* const ok);
-
-sparsebn_t*    _elements_addr_bn (const sparsebn_t* const sps);
-
-/* non-sparse primitive utilities */
-
-size_t*               ns64_zero_ranges (const uint64_t* const array, const size_t len);
-uint64_t*            ns64_nonzero_elts (const uint64_t* const array, const size_t len);
-uint64_t*       ns64_nonzero_elts_idxs (const uint64_t* const array, const size_t len);
-size_t          ns64_count_next_zeroes (const uint64_t* const array, const size_t len, const size_t idx);
-size_t   ns64_count_adjc_nonzero_pairs (const uint64_t* const array, const size_t len);
-size_t         ns64_count_nonzero_elts (const uint64_t* const array, const size_t len);
-size_t          ns64_count_zero_ranges (const uint64_t* const array, const size_t len);
 #endif
