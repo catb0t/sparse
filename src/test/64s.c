@@ -4,10 +4,15 @@
 
 Test(prim, len) {
   sparse64_t a[9] = {4, 0, 1, 0, 2, 121, 123, 899, 923};
-  cr_assert_eq(4, sparse64_len(a));
-  cr_assert_eq(9, sparse64_lenr(a));
+  cr_assert_eq(4, sparse64_len_pairs(a));
+  cr_assert_eq(9, sparse64_len_real(a));
 
   cr_assert_eq(4 + 1020, sparse64_len_virtual(a));
+
+  sparse64_t* blank = sparse64_blank();
+  cr_assert_eq(0, sparse64_len_virtual(blank));
+  cr_assert_eq(1, sparse64_len_real(blank)); // just a length 
+  cr_assert_eq(0, sparse64_len_pairs(blank));
 }
 
 Test(prim, lsch) {

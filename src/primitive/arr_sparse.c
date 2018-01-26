@@ -26,8 +26,8 @@ sparse64_t* sparse64_new (const uint64_t* const non_sparse, const uint64_t len) 
   new blank sparse array of size 1, ending with a zero element
 */
 sparse64_t* sparse64_blank (void) {
-  static const sparse64_t template[3] = {1, 0, 0};
-  return memcpy(alloc(sparse64_t, 3), template, 3);
+  const size_t blank_len = 1;
+  return memset(alloc(sparse64_t, blank_len), 0, blank_len);
 }
 
 /*
@@ -51,9 +51,9 @@ sparse64_t*     sparse64_insert (const sparse64_t* const sps, const size_t index
 
   // if the index is within a zero range and the value is zero just lengthen the range
   if ( 0 == value && sparse64_is_zero_index(sps, index) ) {
-    const size_t in_rlen = sparse64_lenr(sps);
+    const size_t in_rlen = sparse64_len_real(sps);
     sparse64_t* const new = memcpy( alloc(sparse64_t, in_rlen), sps, in_rlen );
-    ++ new[ sparse64_index_inside(sps, index) ];
+    ++ new[ sparse64_virtual_to_real(sps, index) ];
     return new;
   }
 
@@ -61,9 +61,9 @@ sparse64_t*     sparse64_insert (const sparse64_t* const sps, const size_t index
 }
 
 sparse64_t*     sparse64_delete (const sparse64_t* const sps, const size_t index, bool* const ok) {
+  set_out_param(ok, true);
   (void) sps;
   (void) index;
-  (void) ok;
   return NULL;
 }
 
@@ -113,7 +113,7 @@ sparse64_t sparse64_search_idx_linear (const sparse64_t* const sps, const size_t
     return 0;
   }
 
-  const size_t len = sparse64_len(sps), rlen = 2 * len;
+  const size_t len = sparse64_len_pairs(sps), rlen = 2 * len;
 
   size_t* const zero_ranges = sparse64_uncompress_zero_ranges(sps);
 
@@ -147,11 +147,21 @@ sparse64_t sparse64_search_idx_linear (const sparse64_t* const sps, const size_t
 }
 
 sparse64_t sparse64_search_idx_binary (const sparse64_t* const sps, const size_t index, bool* const ok) {
+  set_out_param(ok, true);
   (void) sps;
   (void) index;
-  (void) *ok;
   return 0;
 }
+
+/*
+
+*/
+size_t sparse64_virtual_to_real (const sparse64_t* const sps, const size_t index) {
+  (void) sps;
+  (void) index;
+  return 0;
+}
+
 
 /*
   uint64_t*, size_t*, size_t -> sparse64_t*
@@ -238,7 +248,7 @@ sparse64_t* sparse64_ranges_to_addrs (const size_t* const ranges, const size_t l
 */
 
 size_t* sparse64_uncompress_zero_ranges (const sparse64_t* const sps) {
-  const size_t len = sparse64_len(sps), rlen = 2 * len;
+  const size_t len = sparse64_len_pairs(sps), rlen = 2 * len;
 
   size_t
     * const addrs = _elements_addr_64(sps), // has length 'len'
@@ -275,7 +285,7 @@ size_t* sparse64_uncompress_zero_ranges (const sparse64_t* const sps) {
 */
 
 size_t* _elements_addr_64 (const sparse64_t* const sps) {
-  const size_t len = sparse64_len(sps);
+  const size_t len = sparse64_len_pairs(sps);
   size_t* const out = alloc(size_t, len);
 
   // i = sps; j = out
@@ -293,7 +303,7 @@ size_t* _elements_addr_64 (const sparse64_t* const sps) {
   only the data elements preceded by their real indexes from a sparse array
 */
 size_t* _elements_data_64 (const sparse64_t* const sps) {
-  const size_t rlen = 2 * sparse64_len(sps);
+  const size_t rlen = 2 * sparse64_len_pairs(sps);
   size_t* const
     out         = alloc(size_t, rlen),
     index_total = 0;

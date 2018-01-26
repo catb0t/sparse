@@ -67,9 +67,12 @@ sparse64_t         sparse64_get (const sparse64_t* const sps, const size_t index
 sparse64_t*     sparse64_insert (const sparse64_t* const sps, const size_t index, const sparse64_t value, bool* const ok);
 sparse64_t*     sparse64_delete (const sparse64_t* const sps, const size_t index, bool* const ok);
 
-size_t         sparse64_len (const sparse64_t* const sps);
-size_t        sparse64_lenr (const sparse64_t* const sps);
+size_t   sparse64_len_pairs (const sparse64_t* const sps);
+size_t    sparse64_len_real (const sparse64_t* const sps);
 size_t sparse64_len_virtual (const sparse64_t* const sps);
+
+bool     sparse64_is_zero_index (const sparse64_t* const sps, const size_t index);
+size_t sparse64_virtual_to_real (const sparse64_t* const sps, const size_t index);
 
 sparse64_t sparse64_search_idx_linear (const sparse64_t* const sps, const size_t index, bool* const ok);
 sparse64_t sparse64_search_idx_binary (const sparse64_t* const sps, const size_t index, bool* const ok);

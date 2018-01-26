@@ -12,7 +12,7 @@
 size_t sparse64_len_virtual (const sparse64_t* const sps) {
 
   // address len
-  const size_t alen = sparse64_len(sps);
+  const size_t alen = sparse64_len_pairs(sps);
 
   // the number of address elements is also the number of data elements
   size_t sum = alen;
@@ -30,12 +30,12 @@ size_t sparse64_len_virtual (const sparse64_t* const sps) {
   number of EITHER data or address elements represented by this array
   (since there is one address element for each data)
 */
-size_t   sparse64_len (const sparse64_t* const sps) {
+size_t   sparse64_len_pairs (const sparse64_t* const sps) {
   return sps[0];
 }
 
 /* number of actual bytes allocated by this array for primitive indexing */
-size_t  sparse64_lenr (const sparse64_t* const sps) {
+size_t  sparse64_len_real (const sparse64_t* const sps) {
   return _real_len_64(sps[0]);
 }
 
@@ -60,3 +60,28 @@ bool is_in_range_64 (const size_t n, const size_t low, const size_t high) {
   if ( 0 == (low + high) ) { return false; }
   return n >= low && n < high;
 }
+
+/*
+  determine whether index falls within a zero range (given virtual expansion)
+*/
+bool sparse64_is_zero_index (const sparse64_t* const sps, const size_t index) {
+  const size_t
+    vlen = sparse64_len_virtual(sps),
+    ranges_len = 2 * sparse64_len_pairs(sps);
+  if (index > vlen) {
+    return false;
+  }
+
+  size_t* const ranges = sparse64_uncompress_zero_ranges(sps);
+
+  for (size_t r = 0; r < ranges_len; r += 2) {
+    if ( ranges[r] <= index && ranges[r + 1] >= index ) {
+      free(ranges);
+      return true;
+    }
+  }
+
+  free(ranges);
+  return false;
+}
+
